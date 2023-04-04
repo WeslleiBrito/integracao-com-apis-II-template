@@ -18,50 +18,33 @@ function App() {
   const [pageFlow, setPageFlow] = useState(1);
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
-  const [pesquisa, setPesquisa] = useState({ nome: "", email: "" });
 
   useEffect(() => {
     getUsuarios();
   }, []);
 
-  const getUsuarios = () => {
-    axios
-      .get(
-        BASE_URL,
+  const getUsuarios = async (pesquisa) => {
+
+    try {
+
+      const res = await axios.get(!pesquisa ? BASE_URL : `${BASE_URL}search?name=${pesquisa.nome}&email=${pesquisa.email}`,
         {
           headers: {
             Authorization: AUTH_TOKEN,
           },
         }
       )
-      .then((res) => {
-        setUsuarios(res.data);
-      })
-      .catch((error) => {
-        console.log(error.response);
-      });
-  };
 
-  const pesquisaUsuario = async (pesquisa) => {
-   
-    try {
-      const response = await axios.get(
-        `${BASE_URL}search?name=${pesquisa.nome}&email=${pesquisa.email}`,
-        {
-          headers: {Authorization: AUTH_TOKEN}
-        }
-      )
+      setUsuarios(res.data);
+      setEmail("")
+      setNome("")
 
-      setUsuarios(response.data)
     } catch (error) {
       console.log(error.response)
     }
 
   };
 
-  useEffect(() => {
-    pesquisaUsuario(pesquisa)
-  }, [pesquisa])
 
   const onChangeName = (e) => {
     setNome(e.target.value);
@@ -69,19 +52,6 @@ function App() {
 
   const onChangeEmail = (e) => {
     setEmail(e.target.value);
-  };
-
-  const enviarDados = () => {
-    
-    const novaPesquisa = {
-      nome,
-      email,
-    };
-    setPesquisa(novaPesquisa);
-    pesquisaUsuario(pesquisa)
-    setNome("")
-    setEmail("")
-    
   };
 
   const onClickVoltar = () => {
@@ -112,7 +82,7 @@ function App() {
                   onChange={onChangeEmail}
                   placeholder="Email"
                 />
-                <button type="submit" onClick={enviarDados}>
+                <button type="submit" onClick={() => getUsuarios({ nome, email })}>
                   Pesquisar
                 </button>
               </div>
@@ -123,7 +93,7 @@ function App() {
                   Cadastrar
                 </ButtonCadastro>
               )}
-              
+
             </ContainerBarra>
             {usuarios.map((usuario) => {
               return (
@@ -138,7 +108,7 @@ function App() {
             })}
           </>
         )}
-        
+
       </ContainerPrincipal>
     </div>
   );

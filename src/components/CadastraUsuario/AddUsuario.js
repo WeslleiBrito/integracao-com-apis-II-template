@@ -15,27 +15,27 @@ function AddUsuario(props) {
     };
 
     try {
-      
-      const response = await  axios
-      .post(
-        BASE_URL,
-        body,
-        {
-          headers: {
-            Authorization: AUTH_TOKEN
+
+      await axios
+        .post(
+          BASE_URL,
+          body,
+          {
+            headers: {
+              Authorization: AUTH_TOKEN
+            }
           }
-        }
-      )
-      
+        )
+
       alert("usuario criado!");
-        props.getUsuarios();
-        setEmail("");
-        setNome("");
+      props.getUsuarios();
+      setEmail("");
+      setNome("");
 
     } catch (error) {
       console.log("erro add", error.response);
     }
-    
+
   };
 
   return (
