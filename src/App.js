@@ -9,6 +9,9 @@ import {
   ButtonCadastro,
   BoxCadastro,
 } from "./Appstyle";
+import { BASE_URL } from "./constants/BASE_URL";
+import { AUTH_TOKEN } from "./constants/AUTH_TOKEN";
+
 
 function App() {
   const [usuarios, setUsuarios] = useState([]);
@@ -24,10 +27,10 @@ function App() {
   const getUsuarios = () => {
     axios
       .get(
-        "https://us-central1-labenu-apis.cloudfunctions.net/labenusers/users",
+        BASE_URL,
         {
           headers: {
-            Authorization: "ana-sammi-barbosa",
+            Authorization: AUTH_TOKEN,
           },
         }
       )
@@ -39,9 +42,26 @@ function App() {
       });
   };
 
-  const pesquisaUsuario = (pesquisa) => {
+  const pesquisaUsuario = async (pesquisa) => {
    
+    try {
+      const response = await axios.get(
+        `${BASE_URL}search?name=${pesquisa.nome}&email=${pesquisa.email}`,
+        {
+          headers: {Authorization: AUTH_TOKEN}
+        }
+      )
+
+      setUsuarios(response.data)
+    } catch (error) {
+      console.log(error.response)
+    }
+
   };
+
+  useEffect(() => {
+    pesquisaUsuario(pesquisa)
+  }, [pesquisa])
 
   const onChangeName = (e) => {
     setNome(e.target.value);
@@ -52,12 +72,13 @@ function App() {
   };
 
   const enviarDados = () => {
+    
     const novaPesquisa = {
       nome,
       email,
     };
     setPesquisa(novaPesquisa);
-   
+    pesquisaUsuario(pesquisa)
     setNome("")
     setEmail("")
     
